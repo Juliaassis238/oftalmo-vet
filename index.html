@@ -199,20 +199,53 @@
   .feat span.d{color:var(--ivory-dim);font-size:0.86rem;line-height:1.6;}
   @media(max-width:880px){.about .wrap{grid-template-columns:1fr;}.feat-grid{grid-template-columns:1fr;}.about-figure{aspect-ratio:auto;}}
 
-  /* ===== GALLERY — real images rendered inline via SVG/duotone photography ===== */
-  .gallery{background:#fafaf8;}
-  .gal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
-  .gal-item{
-    aspect-ratio:3/4;position:relative;overflow:hidden;background:#f5f1e7;
+  /* ===== CAROUSEL ===== */
+  .carousel-block{max-width:1180px;margin:0 auto;}
+  .carousel-wrapper{position:relative;display:flex;align-items:center;}
+  .carousel-track{
+    display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;
+    padding:20px 0;scrollbar-width:none;-ms-overflow-style:none;
+    cursor:grab;user-select:none;
   }
-  .gal-item svg{position:absolute;inset:0;width:100%;height:100%;transition:transform .6s ease;}
-  .gal-item:hover svg{transform:scale(1.06);}
-  .gal-item .cap{
-    position:absolute;left:0;right:0;bottom:0;padding:22px;z-index:2;
-    background:linear-gradient(to top, rgba(15,21,18,0.92), transparent 70%);
+  .carousel-track::-webkit-scrollbar{display:none;}
+  .carousel-slide{
+    flex:0 0 auto;width:calc(33.333% - 11px);min-width:280px;
+    aspect-ratio:4/3;scroll-snap-align:start;
+    border-radius:4px;overflow:hidden;background:#f5f1e7;
+    transition:transform .4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow .4s ease;
   }
-  .gal-item .cap h4{font-family:'Fraunces',serif;font-size:1.02rem;color:var(--ivory);margin-top:4px;}
-  @media(max-width:880px){.gal-grid{grid-template-columns:repeat(2,1fr);}}
+  .carousel-slide:hover{transform:translateY(-6px);box-shadow:0 12px 40px rgba(0,0,0,0.15);}
+  .carousel-slide img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;}
+  .carousel-slide:hover img{transform:scale(1.05);}
+  .carousel-btn{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.9);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;z-index:10;transition:all .3s;box-shadow:0 4px 12px rgba(0,0,0,0.1);
+  }
+  .carousel-btn:hover{background:var(--gold);color:#fff;transform:scale(1.1);}
+  .carousel-btn-prev{left:-8px;}
+  .carousel-btn-next{right:-8px;}
+  .carousel-dots{display:flex;justify-content:center;gap:8px;margin-top:20px;}
+  .carousel-dots .dot{
+    width:8px;height:8px;border-radius:50%;background:var(--line);
+    cursor:pointer;transition:all .3s;
+  }
+  .carousel-dots .dot.active{background:var(--gold);width:24px;border-radius:4px;}
+  .carousel-track.grabbing{cursor:grabbing;scroll-behavior:auto;}
+  .carousel-track{cursor:grab;}
+
+  @media(max-width:1024px){
+    .carousel-slide{width:calc(50% - 8px);min-width:160px;}
+    .carousel-wrapper{gap:0;}
+    .carousel-btn-prev{left:-4px;}
+    .carousel-btn-next{right:-4px;}
+    .carousel-btn{width:36px;height:36px;font-size:0.9rem;}
+  }
+  @media(max-width:640px){
+    .carousel-slide{width:calc(75% - 8px);min-width:140px;}
+    .carousel-track{gap:10px;}
+  }
 
   /* ===== LOCATION ===== */
   .location .wrap{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,70px);}
@@ -300,8 +333,6 @@
   <a href="#contato" class="btn-cta">Agendar</a>
 </div>
 
-<!-- JavaScript de troca de fundo removido em favor do CSS Media Queries para maior performance -->
-
 <section class="hero" id="top">
   <div class="iris-field"></div>
   <div class="wrap">
@@ -324,8 +355,8 @@
   </div>
 </section>
 
-<div class="mascote-section reveal in">
-  <img src="assets/mascote_oftalmovet.png" alt="Mascote Oftalmo Vet">
+<div class="mascote-section">
+    <img src="assets/mascote.png" alt="Mascote Oftalmo Vet" width="300" height="300" loading="lazy" />
 </div>
 
 <section class="services" id="servicos">
@@ -385,16 +416,52 @@
 
 <section class="gallery" id="galeria">
   <div class="wrap">
-    <div class="sec-head reveal in">
+    <div class="sec-head reveal">
       <div class="divider"></div>
       <span class="eyebrow">Nossa Clínica</span>
       <h2>Estrutura preparada para o melhor cuidado.</h2>
     </div>
-    <div class="gal-grid reveal in">
-      <div class="gal-item"><img src="assets/galeria/clinica_01.webp" alt="Estrutura 1" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="gal-item"><img src="assets/galeria/clinica_02.webp" alt="Estrutura 2" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="gal-item"><img src="assets/galeria/clinica_03.webp" alt="Estrutura 3" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div class="gal-item"><img src="assets/galeria/clinica_04.webp" alt="Estrutura 4" style="width:100%;height:100%;object-fit:cover;"></div>
+
+    <div class="carousel-block reveal">
+      <div class="carousel-wrapper">
+        <button class="carousel-btn carousel-btn-prev" aria-label="Anterior">&#10094;</button>
+        <div class="carousel-track" id="carousel-clinica">
+          <div class="carousel-slide"><img src="galeria/clinica_optimized/clinica_00.webp" alt="Equipe Oftalmo Vet" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/clinica_optimized/clinica_01.webp" alt="Monitoramento ocular" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/clinica_optimized/clinica_02.webp" alt="Corredor da clínica" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/clinica_optimized/clinica_03.webp" alt="Fachada da clínica" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/clinica_optimized/clinica_04.webp" alt="Microscópio oftalmológico" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/clinica_optimized/clinica_05.webp" alt="Equipamentos de precisão" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/clinica_optimized/clinica_06.webp" alt="Sala cirúrgica" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/clinica_optimized/clinica_07.webp" alt="Recepção da clínica" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/clinica_optimized/clinica_08.webp" alt="Exame oftalmológico" loading="lazy"></div>
+        </div>
+        <button class="carousel-btn carousel-btn-next" aria-label="Próximo">&#10095;</button>
+      </div>
+      <div class="carousel-dots" id="dots-clinica"></div>
+    </div>
+
+    <div class="sec-head reveal" style="margin-top:clamp(80px,12vw,140px);">
+      <div class="divider"></div>
+      <span class="eyebrow">Casos e Exames</span>
+      <h2>Resultados que transformam vidas.</h2>
+    </div>
+
+    <div class="carousel-block reveal" style="margin-top:clamp(60px,8vw,100px);">
+      <div class="carousel-wrapper">
+        <button class="carousel-btn carousel-btn-prev" aria-label="Anterior">&#10094;</button>
+        <div class="carousel-track" id="carousel-atendimentos">
+          <div class="carousel-slide"><img src="galeria/atendimentos_optimized/atendimentos_01.webp" alt="Exame oftalmológico" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/atendimentos_optimized/atendimentos_06.webp" alt="Exame ocular de pássaro" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/atendimentos_optimized/atendimentos_07.webp" alt="Exame ocular de cobra" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/atendimentos_optimized/atendimentos_08.webp" alt="Fundo de olho" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/atendimentos_optimized/atendimentos_09.webp" alt="Caso clínico" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/atendimentos_optimized/atendimentos_13.webp" alt="Diagnóstico preciso" loading="lazy"></div>
+          <div class="carousel-slide"><img src="galeria/atendimentos_optimized/atendimentos_14.webp" alt="Dra. Marília em ação" loading="lazy"></div>
+        </div>
+        <button class="carousel-btn carousel-btn-next" aria-label="Próximo">&#10095;</button>
+      </div>
+      <div class="carousel-dots" id="dots-atendimentos"></div>
     </div>
   </div>
 </section>
@@ -460,12 +527,12 @@
 
 <section class="inauguracao" id="inauguracao" style="padding: 140px 0; background: #fff;">
   <div class="wrap">
-    <div class="sec-head reveal in">
+    <div class="sec-head reveal">
       <span class="eyebrow">Inauguração</span>
       <h2>Um novo capítulo para a Oftalmo Vet</h2>
       <p>Nossa nova sede foi planejada em cada detalhe para oferecer o que há de mais moderno em oftalmologia veterinária, com o conforto e a segurança que seu pet merece.</p>
     </div>
-    <div class="about-figure reveal in" style="max-width: 800px; margin: 0 auto;">
+    <div class="about-figure reveal" style="max-width: 800px; margin: 0 auto;">
       <img src="./foto1_fachada.jpg" alt="Inauguração da Clínica" style="width: 100%; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
     </div>
   </div>
@@ -528,6 +595,87 @@
 
   window.addEventListener('scroll', revealOnScroll);
   revealOnScroll(); // Initial check
+
+  // Carousel Logic
+  function initCarousel(trackId, dotsId) {
+    const track = document.getElementById(trackId);
+    const dotsContainer = document.getElementById(dotsId);
+    if (!track || !dotsContainer) return;
+
+    const block = track.closest('.carousel-block');
+    const prevBtn = block.querySelector('.carousel-btn-prev');
+    const nextBtn = block.querySelector('.carousel-btn-next');
+    const slides = track.querySelectorAll('.carousel-slide');
+
+    let isDragging = false;
+    let startX;
+    let scrollLeft;
+
+    // Create dots
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      if (idx === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => {
+        track.scrollTo({
+          left: slides[idx].offsetLeft - track.offsetLeft,
+          behavior: 'smooth'
+        });
+      });
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = dotsContainer.querySelectorAll('.dot');
+
+    const updateActiveDot = () => {
+      const scrollPos = track.scrollLeft;
+      const slideWidth = slides[0].offsetWidth + 16;
+      const activeIdx = Math.round(scrollPos / slideWidth);
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === activeIdx);
+      });
+    };
+
+    track.addEventListener('scroll', updateActiveDot);
+
+    // Buttons
+    nextBtn.addEventListener('click', () => {
+      track.scrollBy({ left: slides[0].offsetWidth + 16, behavior: 'smooth' });
+    });
+
+    prevBtn.addEventListener('click', () => {
+      track.scrollBy({ left: -(slides[0].offsetWidth + 16), behavior: 'smooth' });
+    });
+
+    // Mouse Drag
+    track.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      track.classList.add('grabbing');
+      startX = e.pageX - track.offsetLeft;
+      scrollLeft = track.scrollLeft;
+    });
+
+    track.addEventListener('mouseleave', () => {
+      isDragging = false;
+      track.classList.remove('grabbing');
+    });
+
+    track.addEventListener('mouseup', () => {
+      isDragging = false;
+      track.classList.remove('grabbing');
+    });
+
+    track.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - track.offsetLeft;
+      const walk = (x - startX) * 2;
+      track.scrollLeft = scrollLeft - walk;
+    });
+  }
+
+  initCarousel('carousel-clinica', 'dots-clinica');
+  initCarousel('carousel-atendimentos', 'dots-atendimentos');
 </script>
 
 </body>
